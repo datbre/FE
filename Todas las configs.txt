@@ -1,0 +1,654 @@
+! ==============================================================================
+!  R1
+! ==============================================================================
+enable
+configure terminal
+hostname R1
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+int gig0/0/0
+ip add 23.17.75.102 255.255.255.252
+no sh
+exit
+int gig0/0
+no ip address
+no sh
+exit
+int gig0/0.300
+encapsulation dot1Q 300
+ip add 23.17.64.2 255.255.248.0
+standby 30 ip 23.17.64.1
+standby 30 priority 110
+standby 30 preempt
+ip helper-address 23.17.75.101
+exit
+int gig0/0.500
+encapsulation dot1Q 500
+ip add 23.17.75.34 255.255.255.224
+standby 50 ip 23.17.75.33
+standby 50 priority 110
+standby 50 preempt
+ip helper-address 23.17.75.101
+exit
+int gig0/0.999
+encapsulation dot1Q 999 native
+no ip address
+exit
+ip route 0.0.0.0 0.0.0.0 23.17.75.101
+end
+wr
+
+! ==============================================================================
+!  R2
+! ==============================================================================
+enable
+configure terminal
+hostname R2
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+int gig0/1/0
+ip add 23.17.75.106 255.255.255.252
+no sh
+exit
+int gig0/1
+no ip address
+no sh
+exit
+int gig0/1.300
+encapsulation dot1Q 300
+ip add 23.17.64.3 255.255.248.0
+standby 30 ip 23.17.64.1
+standby 30 priority 120
+standby 30 preempt
+ip helper-address 23.17.75.105
+exit
+int gig0/1.500
+encapsulation dot1Q 500
+ip add 23.17.75.35 255.255.255.224
+standby 50 ip 23.17.75.33
+standby 50 priority 120
+standby 50 preempt
+ip helper-address 23.17.75.105
+exit
+int gig0/1.999
+encapsulation dot1Q 999 native
+no ip address
+exit
+ip route 0.0.0.0 0.0.0.0 23.17.75.105
+end
+wr
+
+! ==============================================================================
+!  R3-DHCP
+! ==============================================================================
+enable
+configure terminal
+hostname R3DHCP
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+int gig0/0/0
+ip add 23.17.75.101 255.255.255.252
+no sh
+exit
+int gig0/1/0
+ip add 23.17.75.105 255.255.255.252
+no sh
+exit
+int gig0/2/0
+ip add 23.17.75.97 255.255.255.252
+no sh
+exit
+ip dhcp excluded-address 23.17.74.1
+ip dhcp excluded-address 23.17.75.1
+ip dhcp excluded-address 23.17.75.65
+ip dhcp excluded-address 23.17.72.1 23.17.72.2
+ip dhcp excluded-address 23.17.64.1 23.17.64.3
+ip dhcp excluded-address 23.17.75.33 23.17.75.35
+ip dhcp pool FINANZAS
+network 23.17.75.0 255.255.255.224
+default-router 23.17.75.1
+dns-server 23.17.74.131
+exit
+ip dhcp pool TI
+network 23.17.75.64 255.255.255.224
+default-router 23.17.75.65
+dns-server 23.17.74.131
+exit
+ip dhcp pool WIFI
+network 23.17.72.0 255.255.254.0
+default-router 23.17.72.1
+dns-server 23.17.74.131
+exit
+ip dhcp pool ACADEMICOS
+network 23.17.75.32 255.255.255.224
+default-router 23.17.75.33
+dns-server 23.17.74.131
+exit
+ip dhcp pool DOCENTES_ESTUDIANTES
+network 23.17.64.0 255.255.248.0
+default-router 23.17.64.1
+dns-server 23.17.74.131
+exit
+ip dhcp pool EMPLEADOS
+network 23.17.74.0 255.255.255.224
+default-router 23.17.74.1
+dns-server 23.17.74.131
+exit
+ip route 23.17.74.128 255.255.255.128 23.17.75.98
+ip route 23.17.74.0 255.255.255.224 23.17.75.98
+ip route 23.17.75.0 255.255.255.224 23.17.75.98
+ip route 23.17.75.64 255.255.255.224 23.17.75.98
+ip route 23.17.72.0 255.255.254.0 23.17.75.98
+ip route 23.17.64.0 255.255.248.0 23.17.75.106
+ip route 23.17.75.32 255.255.255.224 23.17.75.106
+ip route 23.17.64.0 255.255.248.0 23.17.75.102 5
+ip route 23.17.75.32 255.255.255.224 23.17.75.102 5
+ip route 0.0.0.0 0.0.0.0 209.165.200.226
+ip address 209.165.200.226 255.255.255.248
+end
+wr
+
+! ==============================================================================
+! Router ISP
+! ==============================================================================
+enable
+configure terminal
+hostname ISP
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+int gig0/0
+ip address 8.8.8.1 255.255.255.0
+no sh
+exit
+int gig0/0/0
+ip address 209.165.200.226 255.255.255.248
+no sh
+exit
+ip route 23.17.0.0 255.255.0.0 209.165.200.225
+end
+wr
+
+! ==============================================================================
+! SMultiCapa1
+! ==============================================================================
+enable
+configure terminal
+hostname SMC1
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+enable secret Cisco123
+service password-encryption
+username Admin privilege 15 secret Cisco123
+username 2023-1700 privilege 15 secret Cisco123
+ip domain-name itla.local
+crypto key generate rsa general-keys modulus 1024
+ip ssh version 2
+line vty 0 4
+login local
+transport input ssh
+ip routing
+vlan 2
+name SERVIDORES
+vlan 3
+name EMPLEADOS
+vlan 4
+name FINANZAS
+vlan 5
+name TI
+vlan 6
+name WIFI
+vlan 7
+name NATIVA
+exit
+int vlan 2
+ip add 23.17.74.129 255.255.255.128
+ip helper-address 23.17.75.97
+no sh
+int vlan 3
+ip add 23.17.74.1 255.255.255.224
+ip helper-address 23.17.75.97
+no sh
+int vlan 4
+ip add 23.17.75.1 255.255.255.224
+ip helper-address 23.17.75.97
+no sh
+int vlan 5
+ip add 23.17.75.65 255.255.255.224
+ip helper-address 23.17.75.97
+no sh
+int vlan 6
+ip add 23.17.72.1 255.255.254.0
+ip helper-address 23.17.75.97
+no sh
+exit
+int gig1/1/1
+no switchport
+ip add 23.17.75.98 255.255.255.252
+no sh
+exit
+int port-channel 2
+sw mo tru
+sw tru native vlan 7
+sw tru allowed vlan 2,3,4,5,6,7
+sw nonegotiate
+no sh
+int ra gig1/0/22-23
+sw mo tru
+sw tru native vlan 7
+sw tru allowed vlan 2,3,4,5,6,7
+sw nonegotiate
+channel-group 2 mode active
+exit
+int gi1/0/24
+sw mo tru
+sw tru native vlan 7
+sw tru allowed vlan 6,7
+sw nonegotiate
+no sh
+exit
+ip route 0.0.0.0 0.0.0.0 23.17.75.97
+end
+wr
+
+! ==============================================================================
+!  SW1
+! ==============================================================================
+enable
+conf t
+hostname SW1
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+vlan 300
+name DOCENTES_ESTUDIANTES
+vlan 500
+name ACADEMICOS
+vlan 999
+name ADMIN_NATIVA
+exit
+int fa0/9
+sw mo acc
+sw acc vlan 500
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int fa0/17
+sw mo acc
+sw acc vlan 500
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int fa0/6
+sw mo acc
+sw acc vlan 300
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int fa0/20
+sw mo acc
+sw acc vlan 300
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int port-channel 1
+sw mo tru
+sw tru native vlan 999
+sw tru allowed vlan 300,500,999
+sw nonegotiate
+no sh
+exit
+int ra fa0/23-24
+sw mo tru
+sw tru native vlan 999
+sw tru allowed vlan 300,500,999
+sw nonegotiate
+channel-group 1 mode active
+exit
+int gig0/1
+sw mo tru
+sw tru native vlan 999
+sw tru allowed vlan 300,500,999
+sw nonegotiate
+no sh
+exit
+spanning-tree vlan 300,500,999 root secondary
+end
+wr
+
+! ==============================================================================
+!  SW2
+! ==============================================================================
+enable
+conf t
+hostname SW2
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+vlan 300
+name DOCENTES_ESTUDIANTES
+vlan 500
+name ACADEMICOS
+vlan 999
+name ADMIN_NATIVA
+exit
+int fa0/5
+sw mo acc
+sw acc vlan 300
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int fa0/6
+sw mo acc
+sw acc vlan 300
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int fa0/20
+sw mo acc
+sw acc vlan 300
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int fa0/9
+sw mo acc
+sw acc vlan 500
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int fa0/17
+sw mo acc
+sw acc vlan 500
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int port-channel 1
+sw mo tru
+sw tru native vlan 999
+sw tru allowed vlan 300,500,999
+sw nonegotiate
+no sh
+exit
+int ra fa0/23-24
+sw mo tru
+sw tru native vlan 999
+sw tru allowed vlan 300,500,999
+sw nonegotiate
+channel-group 1 mode active
+exit
+int gig0/1
+sw mo tru
+sw tru native vlan 999
+sw tru allowed vlan 300,500,999
+sw nonegotiate
+no sh
+exit
+spanning-tree vlan 300,500,999 root primary
+end
+wr
+
+! ==============================================================================
+! SW3
+! ==============================================================================
+enable
+conf t
+hostname SW3
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+vlan 2
+name SERVIDORES
+vlan 3
+name EMPLEADOS
+vlan 4
+name FINANZAS
+vlan 5
+name TI
+vlan 6
+name WIFI
+vlan 7
+name NATIVA
+exit
+int ra fa0/1-3
+sw mo acc
+sw acc vlan 2
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int ra fa0/4-8
+sw mo acc
+sw acc vlan 3
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int ra fa0/9-11
+sw mo acc
+sw acc vlan 4
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int ra fa0/12-13
+sw mo acc
+sw acc vlan 5
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int ra fa0/14-18
+sw mo acc
+sw acc vlan 6
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int port-channel 2
+sw mo tru
+sw tru native vlan 7
+sw tru allowed vlan 2,3,4,5,6,7
+sw nonegotiate
+no sh
+exit
+int ra gig0/1-2
+sw mo tru
+sw tru native vlan 7
+sw tru allowed vlan 2,3,4,5,6,7
+channel-group 2 mode active
+no sh
+exit
+end
+wr
+
+! ==============================================================================
+!  SW4
+! ==============================================================================
+enable
+conf t
+hostname SW4
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+vlan 6
+name WIFI
+vlan 7
+name NATIVA
+exit
+int gig0/1
+sw mo tru
+sw tru native vlan 7
+sw tru allowed vlan 6,7
+sw nonegotiate
+no sh
+exit
+int fa0/2
+sw mo acc
+sw acc vlan 6
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int fa0/3
+sw mo acc
+sw acc vlan 6
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int gig0/2
+sw mo acc
+sw acc vlan 6
+spanning-tree portfast
+no sh
+exit
+int fa0/4
+sw mo acc
+sw acc vlan 6
+spanning-tree portfast
+no sh
+exit
+end
+wr
+=============================
+Server-PT DNS-WEB_INTRANET:
+=============================
+IP Address: 23.17.74.131
+
+Subnet Mask: 255.255.255.128
+
+Default Gateway: 23.17.74.129
+
+DNS Server: 23.17.74.131
+=============================
+Server-PT MAIL:
+=============================
+IP Address: 23.17.74.130
+
+Subnet Mask: 255.255.255.128
+
+Default Gateway: 23.17.74.129
+
+DNS Server: 23.17.74.131
+=============================
+Server-PT FTP:
+=============================
+IP Address: 23.17.74.132
+
+Subnet Mask: 255.255.255.128
+
+Default Gateway: 23.17.74.129
+
+DNS Server: 23.17.74.131
+
+==========================================================
+Creación de Credenciales:
+==========================================================
+Admin Username: Admin
+
+Admin Password: Cisco123
+
+System Information:
+
+System Name: WLC-3504
+
+Management IP Address: 23.17.72.2
+
+Subnet Mask: 255.255.254.0
+
+Default Gateway: 23.17.72.1
+
+DNS: 23.17.74.131
+==========================================================
+Wireless Network:
+
+Network Name (SSID): Biblioteca
+
+Security: WPA2 Personal
+
+Passphrase: Cisco123
+
+Advanced Settings:
+
+Virtual IP Management: 1.1.1.1
+
+DHCP Server IP: 23.17.75.97 
+==========================================================
+
+WLAN 2 (Corporativos):
+
+Clic en Create New > Go.
+
+Profile Name / SSID: Corporativos
+
+ID: 2
+
+Clic en Apply.
+
+Pestaña General: Marcar la casilla [x] Status: Enabled.
+
+Passphrase: Cisco123 > Clic en Apply.
+==========================================================
+Grupo Lobby (Corporativos/Campus):
+
+Crear otro grupo llamado Grupo-Lobby.
+
