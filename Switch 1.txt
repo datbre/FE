@@ -1,0 +1,77 @@
+enable
+configure terminal
+hostname SMC1
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+enable secret Cisco123
+service password-encryption
+username Admin privilege 15 secret Cisco123
+username 2023-1700 privilege 15 secret Cisco123
+ip domain-name itla.local
+crypto key generate rsa general-keys modulus 1024
+ip ssh version 2
+line vty 0 4
+login local
+transport input ssh
+ip routing
+vlan 2
+name SERVIDORES
+vlan 3
+name EMPLEADOS
+vlan 4
+name FINANZAS
+vlan 5
+name TI
+vlan 6
+name WIFI
+vlan 7
+name NATIVA
+exit
+int vlan 2
+ip add 23.17.74.129 255.255.255.128
+ip helper-address 23.17.75.97
+no sh
+int vlan 3
+ip add 23.17.74.1 255.255.255.224
+ip helper-address 23.17.75.97
+no sh
+int vlan 4
+ip add 23.17.75.1 255.255.255.224
+ip helper-address 23.17.75.97
+no sh
+int vlan 5
+ip add 23.17.75.65 255.255.255.224
+ip helper-address 23.17.75.97
+no sh
+int vlan 6
+ip add 23.17.72.1 255.255.254.0
+ip helper-address 23.17.75.97
+no sh
+exit
+int gig1/1/1
+no switchport
+ip add 23.17.75.98 255.255.255.252
+no sh
+exit
+int port-channel 2
+sw mo tru
+sw tru native vlan 7
+sw tru allowed vlan 2,3,4,5,6,7
+sw nonegotiate
+no sh
+int ra gig1/0/22-23
+sw mo tru
+sw tru native vlan 7
+sw tru allowed vlan 2,3,4,5,6,7
+sw nonegotiate
+channel-group 2 mode active
+exit
+int gi1/0/24
+sw mo tru
+sw tru native vlan 7
+sw tru allowed vlan 6,7
+sw nonegotiate
+no sh
+exit
+ip route 0.0.0.0 0.0.0.0 23.17.75.97
+end
+wr

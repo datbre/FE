@@ -1,0 +1,30 @@
+Creación de Credenciales:
+Admin Username: Admin
+Admin Password: Cisco123
+
+System Information:
+System Name: WLC-3504
+Management IP Address: 23.17.72.2
+Subnet Mask: 255.255.254.0
+Default Gateway: 23.17.72.1
+DNS: 23.17.74.131
+
+Wireless Network:
+Network Name (SSID): Biblioteca
+Security: WPA2 Personal
+Passphrase: Cisco123
+
+Advanced Settings:
+Virtual IP Management: 1.1.1.1
+DHCP Server IP: 23.17.75.97 
+
+WLAN 2 (Corporativos):
+Clic en Create New > Go.
+Profile Name / SSID: Corporativos
+ID: 2
+Clic en Apply.
+Pestaña General: Marcar la casilla [x] Status: Enabled.
+Passphrase: Cisco123 > Clic en Apply.
+
+Grupo Lobby (Corporativos/Campus):
+Crear otro grupo llamado Grupo-Lobby.

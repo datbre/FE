@@ -1,0 +1,65 @@
+enable
+configure terminal
+hostname R3DHCP
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+int gig0/0/0
+ip add 23.17.75.101 255.255.255.252
+no sh
+exit
+int gig0/1/0
+ip add 23.17.75.105 255.255.255.252
+no sh
+exit
+int gig0/2/0
+ip add 23.17.75.97 255.255.255.252
+no sh
+exit
+ip dhcp excluded-address 23.17.74.1
+ip dhcp excluded-address 23.17.75.1
+ip dhcp excluded-address 23.17.75.65
+ip dhcp excluded-address 23.17.72.1 23.17.72.2
+ip dhcp excluded-address 23.17.64.1 23.17.64.3
+ip dhcp excluded-address 23.17.75.33 23.17.75.35
+ip dhcp pool FINANZAS
+network 23.17.75.0 255.255.255.224
+default-router 23.17.75.1
+dns-server 23.17.74.131
+exit
+ip dhcp pool TI
+network 23.17.75.64 255.255.255.224
+default-router 23.17.75.65
+dns-server 23.17.74.131
+exit
+ip dhcp pool WIFI
+network 23.17.72.0 255.255.254.0
+default-router 23.17.72.1
+dns-server 23.17.74.131
+exit
+ip dhcp pool ACADEMICOS
+network 23.17.75.32 255.255.255.224
+default-router 23.17.75.33
+dns-server 23.17.74.131
+exit
+ip dhcp pool DOCENTES_ESTUDIANTES
+network 23.17.64.0 255.255.248.0
+default-router 23.17.64.1
+dns-server 23.17.74.131
+exit
+ip dhcp pool EMPLEADOS
+network 23.17.74.0 255.255.255.224
+default-router 23.17.74.1
+dns-server 23.17.74.131
+exit
+ip route 23.17.74.128 255.255.255.128 23.17.75.98
+ip route 23.17.74.0 255.255.255.224 23.17.75.98
+ip route 23.17.75.0 255.255.255.224 23.17.75.98
+ip route 23.17.75.64 255.255.255.224 23.17.75.98
+ip route 23.17.72.0 255.255.254.0 23.17.75.98
+ip route 23.17.64.0 255.255.248.0 23.17.75.106
+ip route 23.17.75.32 255.255.255.224 23.17.75.106
+ip route 23.17.64.0 255.255.248.0 23.17.75.102 5
+ip route 23.17.75.32 255.255.255.224 23.17.75.102 5
+ip route 0.0.0.0 0.0.0.0 209.165.200.226
+ip address 209.165.200.226 255.255.255.248
+end
+wr

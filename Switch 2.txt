@@ -1,0 +1,90 @@
+enable
+conf t
+hostname SW2
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+vlan 300
+name DOCENTES_ESTUDIANTES
+vlan 500
+name ACADEMICOS
+vlan 999
+name ADMIN_NATIVA
+exit
+int fa0/5
+sw mo acc
+sw acc vlan 300
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int fa0/6
+sw mo acc
+sw acc vlan 300
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int fa0/20
+sw mo acc
+sw acc vlan 300
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int fa0/9
+sw mo acc
+sw acc vlan 500
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int fa0/17
+sw mo acc
+sw acc vlan 500
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int port-channel 1
+sw mo tru
+sw tru native vlan 999
+sw tru allowed vlan 300,500,999
+sw nonegotiate
+no sh
+exit
+int ra fa0/23-24
+sw mo tru
+sw tru native vlan 999
+sw tru allowed vlan 300,500,999
+sw nonegotiate
+channel-group 1 mode active
+exit
+int gig0/1
+sw mo tru
+sw tru native vlan 999
+sw tru allowed vlan 300,500,999
+sw nonegotiate
+no sh
+exit
+spanning-tree vlan 300,500,999 root primary
+end
+wr

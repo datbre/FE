@@ -1,0 +1,35 @@
+enable
+configure terminal
+hostname R1
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+int gig0/0/0
+ip add 23.17.75.102 255.255.255.252
+no sh
+exit
+int gig0/0
+no ip address
+no sh
+exit
+int gig0/0.300
+encapsulation dot1Q 300
+ip add 23.17.64.2 255.255.248.0
+standby 30 ip 23.17.64.1
+standby 30 priority 110
+standby 30 preempt
+ip helper-address 23.17.75.101
+exit
+int gig0/0.500
+encapsulation dot1Q 500
+ip add 23.17.75.34 255.255.255.224
+standby 50 ip 23.17.75.33
+standby 50 priority 110
+standby 50 preempt
+ip helper-address 23.17.75.101
+exit
+int gig0/0.999
+encapsulation dot1Q 999 native
+no ip address
+exit
+ip route 0.0.0.0 0.0.0.0 23.17.75.101
+end
+wr

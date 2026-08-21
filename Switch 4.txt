@@ -1,0 +1,52 @@
+enable
+conf t
+hostname SW4
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+vlan 6
+name WIFI
+vlan 7
+name NATIVA
+exit
+int gig0/1
+sw mo tru
+sw tru native vlan 7
+sw tru allowed vlan 6,7
+sw nonegotiate
+no sh
+exit
+int fa0/2
+sw mo acc
+sw acc vlan 6
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int fa0/3
+sw mo acc
+sw acc vlan 6
+spanning-tree portfast
+spanning-tree bpduguard enable
+sw port-security
+sw port-security maximum 2
+sw port-security violation shutdown
+sw port-security mac-address sticky
+no sh
+exit
+int gig0/2
+sw mo acc
+sw acc vlan 6
+spanning-tree portfast
+no sh
+exit
+int fa0/4
+sw mo acc
+sw acc vlan 6
+spanning-tree portfast
+no sh
+exit
+end
+wr

@@ -1,0 +1,15 @@
+enable
+configure terminal
+hostname ISP
+banner motd #ACCESO SOLO AUTORIZA - Bernie Laureano - 20231700#
+int gig0/0
+ip address 8.8.8.1 255.255.255.0
+no sh
+exit
+int gig0/0/0
+ip address 209.165.200.226 255.255.255.248
+no sh
+exit
+ip route 23.17.0.0 255.255.0.0 209.165.200.225
+end
+wr

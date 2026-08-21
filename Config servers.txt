@@ -1,0 +1,17 @@
+Server-PT DNS-WEB_INTRANET:
+IP Address: 23.17.74.131
+Subnet Mask: 255.255.255.128
+Default Gateway: 23.17.74.129
+DNS Server: 23.17.74.131
+
+Server-PT MAIL:
+IP Address: 23.17.74.130
+Subnet Mask: 255.255.255.128
+Default Gateway: 23.17.74.129
+DNS Server: 23.17.74.131
+
+Server-PT FTP:
+IP Address: 23.17.74.132
+Subnet Mask: 255.255.255.128
+Default Gateway: 23.17.74.129
+DNS Server: 23.17.74.131
